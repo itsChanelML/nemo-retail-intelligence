@@ -843,7 +843,7 @@ function HomeScreen({ onOpenAgent, onGoToDeals }) {
   const cb    = TRANSACTIONS.reduce((s, t) => s + t.amount * t.cashback / 100, 0);
   return (
     <Scroll>
-      <div style={{ padding: "8px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}>
         <div style={{ borderRadius: 24, padding: "22px 18px", background: G.surface, border: `1px solid ${G.border}`, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -50, right: -50, width: 200, height: 200, background: "radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
           <SectionLabel>April 2025 · Your Money</SectionLabel>
@@ -871,10 +871,11 @@ function HomeScreen({ onOpenAgent, onGoToDeals }) {
         </div>
 
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: G.textPrimary, fontFamily: "'Outfit',sans-serif" }}>Deal Signals</span>
             <div onClick={onGoToDeals} style={{ cursor: "pointer" }}>
-            <GradText style={{ fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>4 live →</GradText>
+              <GradText style={{ fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>4 live →</GradText>
+            </div>
           </div>
           <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 6 }}>
             {DEAL_ALERTS.map(d => (
@@ -991,7 +992,7 @@ function DealsScreen({ apiKey }) {
 function CommunityScreen() {
   return (
     <Scroll>
-      <div style={{ padding: "8px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}><SectionLabel>Creator Feed</SectionLabel>
+      <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}>
         {FRIENDS.map(f => (
           <div key={f.id} style={{ background: G.surface, border: `1px solid ${G.border}`, borderRadius: 18, padding: "14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
