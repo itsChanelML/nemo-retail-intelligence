@@ -842,6 +842,19 @@ const CHALLENGES = [
   { id:3, title:"Fit Check",     emoji:"🏋️", desc:"2 activewear purchases", target:2, progress:2, reward:"10% off Gymshark" },
 ];
 
+// ── callNemotron ───────────────────────────────────────────────
+async function callNemotron(prompt, apiKey) {
+  try {
+    const res = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: "nvidia/llama-3.3-nemotron-super-49b-v1", messages: [{ role: "user", content: prompt }], max_tokens: 140, temperature: 0.72 }),
+    });
+    const d = await res.json();
+    return d.choices?.[0]?.message?.content || null;
+  } catch { return null; }
+}
+
 function HomeScreen({ onOpenAgent, onGoToDeals }) {
   const total = TRANSACTIONS.reduce((s, t) => s + t.amount, 0);
   const cb    = TRANSACTIONS.reduce((s, t) => s + t.amount * t.cashback / 100, 0);
@@ -1200,15 +1213,16 @@ const APP_TABS = [
 
 // Auth flow stages
 const AUTH = { SPLASH:0, EMAIL:1, OTP:2, SOCIAL:3, MEET:4, ONBOARD:5, APP:6 };
-const [savedBriefs, setSavedBriefs] = useState([]);
 
 export default function BrandlyApp() {
+  console.log("BrandlyApp rendering");
   const [stage, setStage] = useState(AUTH.SPLASH);
   const [email, setEmail] = useState("");
   const [tab, setTab]     = useState(0);
   const [apiKey, setApiKey] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [showLog, setShowLog] = useState(false);
+  const [savedBriefs, setSavedBriefs] = useState([]);
 
   const screens = [
     <HomeScreen onOpenAgent={() => setShowLog(true)} onGoToDeals={() => setTab(2)} />,
