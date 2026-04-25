@@ -1215,13 +1215,11 @@ const APP_TABS = [
 const AUTH = { SPLASH:0, EMAIL:1, OTP:2, SOCIAL:3, MEET:4, ONBOARD:5, APP:6 };
 
 export default function BrandlyApp() {
-  console.log("BrandlyApp rendering");
   const [stage, setStage] = useState(AUTH.SPLASH);
   const [email, setEmail] = useState("");
-  const [tab, setTab]     = useState(0);
-  const [apiKey, setApiKey] = useState("");
-  const [showKey, setShowKey] = useState(false);
+  const [tab, setTab] = useState(0);
   const [showLog, setShowLog] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   const [savedBriefs, setSavedBriefs] = useState([]);
 
   const screens = [
@@ -1273,19 +1271,36 @@ export default function BrandlyApp() {
                   <div style={{ fontSize: 9, color: G.textMuted, fontFamily: "'Outfit',sans-serif", letterSpacing: 1 }}>CREATOR COMMERCE INTELLIGENCE</div>
                 </div>
               </div>
-              <button onClick={() => setShowKey(!showKey)} style={{ background: apiKey ? `${G.green}18` : G.surface, border: `1px solid ${apiKey ? G.green + "40" : G.border}`, borderRadius: 20, padding: "6px 12px", fontSize: 9, color: apiKey ? G.green : G.textMuted, fontFamily: "'Outfit',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: 0.6 }}>
-                {apiKey ? "✓ NIM" : "⚡ NIM"}
+              <button onClick={() => setShowChat(!showChat)} style={{ background: `${G.green}18`, border: `1px solid ${G.green}40`, borderRadius: 20, padding: "6px 14px", fontSize: 10, color: G.green, fontFamily: "'Outfit',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: 0.3 }}>
+                ⚡ Ask Bray
               </button>
             </div>
-            {showKey && (
-              <div style={{ padding: "0 20px 10px", flexShrink: 0 }}>
-                <input type="password" placeholder="nvapi-… NVIDIA NIM key" value={apiKey} onChange={e => setApiKey(e.target.value)}
-                  style={{ width: "100%", background: G.surface, border: `1px solid ${G.border}`, borderRadius: 12, padding: "9px 14px", color: G.textPrimary, fontSize: 12, fontFamily: "'Outfit',sans-serif", outline: "none" }} />
-              </div>
-            )}
             <div style={{ flex: 1, overflow: "hidden", paddingTop: 4, position: "relative" }}>
               {screens[tab]}
               {showLog && <AgentLogOverlay onClose={() => setShowLog(false)} />}
+              {showChat && (
+                <div style={{ position:"absolute", inset:0, zIndex:40, background:G.bg, display:"flex", flexDirection:"column" }}>
+                  <div style={{ padding:"16px 20px", borderBottom:`1px solid ${G.border}`, display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
+                    <button onClick={() => setShowChat(false)} style={{ background:"none", border:"none", color:G.textMuted, cursor:"pointer", fontSize:20 }}>←</button>
+                    <div style={{ width:32, height:32, borderRadius:"50%", background:G.grad, display:"flex", alignItems:"center", justifyContent:"center", fontSize:14 }}>✦</div>
+                    <div>
+                      <div style={{ fontSize:14, fontWeight:700, color:G.textPrimary, fontFamily:"'Outfit',sans-serif" }}>Ask Brandly</div>
+                      <div style={{ fontSize:10, color:G.green, fontFamily:"'Outfit',sans-serif" }}>● Your AI deal agent</div>
+                    </div>
+                  </div>
+                  <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"32px 24px" }}>
+                    <div style={{ fontSize:32, marginBottom:16 }}>✦</div>
+                    <p style={{ fontSize:15, color:G.textSec, fontFamily:"'Outfit',sans-serif", textAlign:"center", lineHeight:1.7 }}>
+                      How can I help you today?
+                    </p>
+                    <div style={{ display:"flex", flexDirection:"column", gap:10, width:"100%", marginTop:24 }}>
+                      {["Find me a new brand deal", "How's my pitch looking?", "Who should I collab with?", "What's my best category?"].map(q => (
+                        <button key={q} style={{ padding:"12px 16px", borderRadius:12, background:G.surface, border:`1px solid ${G.border}`, color:G.textPrimary, fontSize:13, fontFamily:"'Outfit',sans-serif", cursor:"pointer", textAlign:"left" }}>{q}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             {!showLog && <AgentPill onExpand={() => setShowLog(true)} />}
             <div style={{ flexShrink: 0, background: "rgba(6,8,16,0.97)", backdropFilter: "blur(24px)", borderTop: `1px solid ${G.border}`, padding: "8px 2px 20px", display: "flex" }}>
