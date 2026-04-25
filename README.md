@@ -167,19 +167,23 @@ This project was built as part of my NVIDIA Inception portfolio to demonstrate:
 **Chanel Power** — Machine Learning Engineer, Founder & Engineering Manager at [Mentor Me Collective](https://mentormecollective.org)
 
 - 7+ years in ML engineering and developer relations
-- Formerly Apple — led GenAI tool adoption across 200+ engineers, shipped Apple Intelligence features
+- Led GenAI tool adoption across 200+ engineers, shipped Apple Intelligence features
 - Built production ML systems including transaction clustering (95.5% precision) and merchant redirect nudges for Apple Card
 - Google Certified Generative AI Leader · NVIDIA DLI Certified (3 certifications, April 2026)
 - GTC 2026 attendee · Genspark Builder Grant recipient (top 300 globally)
 - Founder of MMC — 40K+ community members, 120+ countries, $47.3M in documented career outcomes
 
-🔗 [GitHub](https://github.com/itsChanelML) · [LinkedIn](https://linkedin.com/in/chanelpower) · [Mentor Me Collective](https://mentormecollective.org)
+🔗 [GitHub](https://github.com/itsChanelML) · [LinkedIn](https://linkedin.com/in/powerc1) · [Mentor Me Collective](https://mentormecollective.org)
 
 ---
 
 ## 📄 License
 
-MIT · Built with 🏷️ by Chanel Power for the NVIDIA Inception ecosystem
+Built with 🏷️ by Chanel Power for the NVIDIA Inception ecosystem
+
+© 2026 Chanel Power · All rights reserved.
+
+This project is part of a personal portfolio and is not licensed for redistribution, commercial use, or derivative works without explicit written permission from the author.
 
 ---
 
