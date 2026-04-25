@@ -518,6 +518,47 @@ function OnboardingAgent({ onComplete }) {
   const [cardConnected, setCardConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [initializing, setInitializing] = useState(false);
+  const [agentData, setAgentData] = useState(null);
+  const [agentLoading, setAgentLoading] = useState(false);
+
+  useEffect(() => {
+    if (stage !== AUTH.APP) return;
+    const runAgent = async () => {
+      setAgentLoading(true);
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/agent/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            transactions: [
+              { merchant: "Chipotle", amount: 156.20 },
+              { merchant: "Chipotle", amount: 156.20 },
+              { merchant: "Delta Airlines", amount: 1470.00 },
+              { merchant: "Delta Airlines", amount: 1470.00 },
+              { merchant: "Gymshark", amount: 487.00 },
+              { merchant: "Sephora", amount: 623.00 },
+              { merchant: "Shell", amount: 52.00 },
+            ],
+            creator_profile: {
+              name: "Jordan Rivera",
+              handle: "@jordanrivera",
+              categories: ["fitness", "beauty", "travel"],
+              socials: {
+                instagram: { connected: true, followers: "2.4M", followers_count: 2400000, engagement: "4.2%" },
+                tiktok: { connected: true, followers: "1.8M", followers_count: 1800000, engagement: "6.7%" },
+              }
+            }
+          })
+        });
+        const data = await res.json();
+        setAgentData(data);
+      } catch (e) {
+        console.error("Agent error:", e);
+      }
+      setAgentLoading(false);
+    };
+    runAgent();
+  }, [stage]);
 
   const toggle = (arr, val) => arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
   const toggleBrand = (cat, brand) => setProfile(p => ({ ...p, brands: { ...p.brands, [cat]: toggle(p.brands[cat] || [], brand) } }));
@@ -761,20 +802,29 @@ const AGENT_LOG = [
 ];
 const SC = { PERCEIVE: G.blue, PLAN: G.yellow, ACT: G.green, REFLECT: G.teal };
 
-function AgentPill({ onExpand }) {
-  const latest = AGENT_LOG.find(l => !l.done) || AGENT_LOG[AGENT_LOG.length - 1];
+function AgentPill({ onExpand, agentData, agentLoading }) {
+  const latest = agentData?.agent_log?.[agentData.agent_log.length - 1]
+    || AGENT_LOG.find(l => !l.done)
+    || AGENT_LOG[AGENT_LOG.length - 1];
+
+  const stageColors = { PERCEIVE: G.blue, PLAN: G.yellow, ACT: G.green, REFLECT: G.teal };
+  const stageColor = stageColors[latest.stage] || G.green;
+
   return (
     <div onClick={onExpand} style={{ background: "rgba(12,15,28,0.96)", backdropFilter: "blur(16px)", borderTop: `1px solid ${G.borderGlow}`, padding: "10px 16px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", flexShrink: 0 }}>
-      <div style={{ width: 8, height: 8, borderRadius: "50%", background: G.green, boxShadow: `0 0 8px ${G.green}`, animation: "pulse 2s infinite", flexShrink: 0 }} />
+      <div style={{ width: 8, height: 8, borderRadius: "50%", background: agentLoading ? G.yellow : G.green, boxShadow: `0 0 8px ${agentLoading ? G.yellow : G.green}`, animation: "pulse 2s infinite", flexShrink: 0 }} />
       <span style={{ flex: 1, fontSize: 11, color: G.textSec, fontFamily: "'Outfit',sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        <span style={{ color: SC[latest.stage], fontWeight: 700 }}>{latest.stage}</span> · {latest.text}
+        {agentLoading
+          ? "brandly is scanning your spend…"
+          : <><span style={{ color: stageColor, fontWeight: 700 }}>{latest.stage}</span> · {latest.text}</>
+        }
       </span>
       <span style={{ fontSize: 10, color: G.textMuted, fontFamily: "'Outfit',sans-serif" }}>↑</span>
     </div>
   );
 }
 
-function AgentLogOverlay({ onClose }) {
+function AgentLogOverlay({ onClose, agentData }) {
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: 30, background: "rgba(6,8,16,0.98)", backdropFilter: "blur(20px)", display: "flex", flexDirection: "column", animation: "fadeUp 0.3s ease" }}>
       <div style={{ padding: "20px 20px 12px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${G.border}`, flexShrink: 0 }}>
@@ -797,7 +847,7 @@ function AgentLogOverlay({ onClose }) {
         ))}
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
-        {[...AGENT_LOG].reverse().map((entry, i) => (
+        {([...(agentData?.agent_log || AGENT_LOG)].reverse()).map((entry, i) => (
           <div key={entry.id} style={{ display: "flex", gap: 12, marginBottom: 14, opacity: entry.done ? 1 : 0.6 }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${SC[entry.stage]}18`, border: `1px solid ${SC[entry.stage]}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, flexShrink: 0 }}>{entry.icon}</div>
@@ -883,7 +933,9 @@ function HomeScreen({ onOpenAgent, onGoToDeals }) {
         <div onClick={onOpenAgent} style={{ borderRadius: 18, padding: "14px", background: G.gradSoft, border: `1px solid ${G.borderGlow}`, cursor: "pointer" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: G.green, boxShadow: `0 0 8px ${G.green}`, animation: "pulse 2s infinite" }} />
-            <span style={{ fontSize: 10, color: G.green, fontWeight: 700, letterSpacing: 1, fontFamily: "'Outfit',sans-serif" }}>Your deal agent is active · 4 opportunities found</span>
+            <span style={{ fontSize: 10, color: G.green, fontWeight: 700, letterSpacing: 1, fontFamily: "'Outfit',sans-serif" }}>
+              {agentLoading ? "Brandly is scanning your spend…" : `Your deal agent is active · ${agentData?.deals?.length || 4} opportunities found`}
+            </span>
           </div>
           <p style={{ margin: 0, fontSize: 12, color: G.textSec, fontFamily: "'Outfit',sans-serif", lineHeight: 1.6 }}>Latest: <span style={{ color: G.textPrimary }}>Confidence score updated — Chipotle 94% → 97%</span></p>
           <div style={{ fontSize: 10, color: G.yellow, fontFamily: "'Outfit',sans-serif", marginTop: 6, fontWeight: 600 }}>See how brandly found these deals →</div>
@@ -1256,7 +1308,7 @@ Question: ${question}`;
   };
 
   const screens = [
-    <HomeScreen onOpenAgent={() => setShowLog(true)} onGoToDeals={() => setTab(2)} />,
+    <HomeScreen onOpenAgent={() => setShowLog(true)} onGoToDeals={() => setTab(2)} agentData={agentData} agentLoading={agentLoading} />,
     <SpendScreen />,
     <DealsScreen apiKey={BRANDLY_NIM_KEY} onSaveBrief={(brief) => setSavedBriefs(b => [...b, brief])} />,
     <CommunityScreen />,
@@ -1311,7 +1363,7 @@ Question: ${question}`;
             </div>
             <div style={{ flex: 1, overflow: "hidden", paddingTop: 4, position: "relative" }}>
               {screens[tab]}
-              {showLog && <AgentLogOverlay onClose={() => setShowLog(false)} />}
+              {showLog && <AgentLogOverlay onClose={() => setShowLog(false)} agentData={agentData} />}
               {showChat && (
                 <div style={{ position:"absolute", inset:0, zIndex:40, background:G.bg, display:"flex", flexDirection:"column" }}>
                   <div style={{ padding:"16px 20px", borderBottom:`1px solid ${G.border}`, display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
@@ -1366,7 +1418,7 @@ Question: ${question}`;
                 </div>
               )}
             </div>
-            {!showLog && <AgentPill onExpand={() => setShowLog(true)} />}
+            {!showLog && <AgentPill onExpand={() => setShowLog(true)} agentData={agentData} agentLoading={agentLoading} />}
             <div style={{ flexShrink: 0, background: "rgba(6,8,16,0.97)", backdropFilter: "blur(24px)", borderTop: `1px solid ${G.border}`, padding: "8px 2px 20px", display: "flex" }}>
               {APP_TABS.map((t, i) => {
                 const active = tab === i;
