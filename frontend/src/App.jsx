@@ -519,48 +519,7 @@ function OnboardingAgent({ onComplete }) {
   const [connecting, setConnecting] = useState(false);
   const [initializing, setInitializing] = useState(false);
   const [chatInput, setChatInput] = useState("");
-  const [agentData, setAgentData] = useState(null);
-  const [agentLoading, setAgentLoading] = useState(false);
 
-  useEffect(() => {
-    if (stage !== AUTH.APP) return;
-    const runAgent = async () => {
-      setAgentLoading(true);
-      try {
-        const res = await fetch("http://127.0.0.1:8000/api/agent/run", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            transactions: [
-              { merchant: "Chipotle", amount: 156.20 },
-              { merchant: "Chipotle", amount: 156.20 },
-              { merchant: "Delta Airlines", amount: 1470.00 },
-              { merchant: "Delta Airlines", amount: 1470.00 },
-              { merchant: "Gymshark", amount: 487.00 },
-              { merchant: "Sephora", amount: 623.00 },
-              { merchant: "Shell", amount: 52.00 },
-            ],
-            creator_profile: {
-              name: "Jordan Rivera",
-              handle: "@jordanrivera",
-              categories: ["fitness", "beauty", "travel"],
-              socials: {
-                instagram: { connected: true, followers: "2.4M", followers_count: 2400000, engagement: "4.2%" },
-                tiktok: { connected: true, followers: "1.8M", followers_count: 1800000, engagement: "6.7%" },
-              }
-            }
-          })
-        });
-        const data = await res.json();
-        setAgentData(data);
-      } catch (e) {
-        console.error("Agent error:", e);
-      }
-      setAgentLoading(false);
-    };
-    runAgent();
-  }, [stage]);
-  
   const toggle = (arr, val) => arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
   const toggleBrand = (cat, brand) => setProfile(p => ({ ...p, brands: { ...p.brands, [cat]: toggle(p.brands[cat] || [], brand) } }));
   const selCats = profile.categories;
