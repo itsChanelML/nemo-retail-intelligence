@@ -855,15 +855,15 @@ const CHALLENGES = [
 ];
 
 // ── callNemotron ───────────────────────────────────────────────
-async function callNemotron(prompt, apiKey) {
+async function callNemotron(prompt) {
   try {
-    const res = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+    const res = await fetch("http://127.0.0.1:8000/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: "nvidia/llama-3.3-nemotron-super-49b-v1", messages: [{ role: "user", content: prompt }], max_tokens: 140, temperature: 0.72 }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: prompt }),
     });
     const d = await res.json();
-    return d.choices?.[0]?.message?.content || null;
+    return d.answer || null;
   } catch { return null; }
 }
 
@@ -985,7 +985,7 @@ function DealsScreen({ apiKey, onSaveBrief  }) {
   const [loading, setLoading] = useState({});
   const gen = async (i) => {
     const d = DEAL_ALERTS[i]; setLoading(l => ({ ...l, [i]: true }));
-    const r = await callNemotron(`You are brandly. Creator has 2.4M Instagram followers. They spent heavily at ${d.merchant}. Write 3 punchy lines (line breaks): 1) why brand needs this creator 2) what makes pitch unique 3) first outreach step. Direct.`, apiKey);
+    const r = await callNemotron(`You are brandly. Creator has 2.4M Instagram followers. They spent heavily at ${d.merchant}. Write 3 punchy lines (line breaks): 1) why brand needs this creator 2) what makes pitch unique 3) first outreach step. Direct.`);
     setBriefs(b => ({ ...b, [i]: r || `${d.merchant} needs authentic creators with real spend history — your data proves genuine brand love.\n\nYour 2.4M reach at 4.2% engagement puts you in the top 5% for this category.\n\nHave your manager reach out to ${d.merchant.toLowerCase().replace(/\s/g, "")}@partnerships.com with your media kit this week.` }));
     setLoading(l => ({ ...l, [i]: false }));
   };
@@ -1290,18 +1290,13 @@ Answer this question in 2-3 sentences max. Be direct, warm, and specific to thei
 Question: ${question}`;
 
     try {
-      const res = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+      const res = await fetch("http://127.0.0.1:8000/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${BRANDLY_NIM_KEY}` },
-        body: JSON.stringify({
-          model: "nvidia/llama-3.3-nemotron-super-49b-v1",
-          messages: [{ role: "user", content: context }],
-          max_tokens: 120,
-          temperature: 0.7,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: context }),
       });
       const data = await res.json();
-      const answer = data.choices?.[0]?.message?.content || "I'm having trouble connecting right now. Try again in a moment.";
+      const answer = data.answer || "I'm having trouble connecting right now. Try again in a moment.";
       setChatMessages(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, a: answer, loading: false } : m));
     } catch {
       setChatMessages(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, a: "I'm having trouble connecting right now. Try again in a moment.", loading: false } : m));

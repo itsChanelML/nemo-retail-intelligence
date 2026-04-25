@@ -82,3 +82,23 @@ async def generate_pitch(req: PitchRequest):
 @router.get("/health")
 async def health():
     return {"status": "Brandly agent is live", "model": "nvidia/nemotron-super-49b-v1"}
+
+
+@router.post("/api/chat")
+async def chat(request: dict):
+    from openai import OpenAI
+    import os
+    
+    client = OpenAI(
+        base_url=os.getenv("NIM_BASE_URL"),
+        api_key=os.getenv("NVIDIA_API_KEY")
+    )
+    
+    response = client.chat.completions.create(
+        model=os.getenv("MODEL"),
+        messages=[{"role": "user", "content": request["message"]}],
+        max_tokens=120,
+        temperature=0.7
+    )
+    
+    return {"answer": response.choices[0].message.content}
