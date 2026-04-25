@@ -1,0 +1,14 @@
+<svg width="48" height="53" viewBox="0 0 48 53" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9E547"/>
+      <stop offset="45%" stop-color="#22C55E"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <path d="M6 4C6 1.79 7.79 0 10 0H30L42 12V46C42 48.21 40.21 50 38 50H10C7.79 50 6 48.21 6 46V4Z" fill="url(#tagGrad)"/>
+  <path d="M30 0L42 12H32C30.9 12 30 11.1 30 10V0Z" fill="rgba(0,0,0,0.25)"/>
+  <circle cx="16" cy="8" r="3" fill="rgba(0,0,0,0.3)"/>
+  <line x1="16" y1="5" x2="16" y2="0" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+  <text x="24" y="36" text-anchor="middle" fill="rgba(0,0,0,0.5)" font-size="20" font-weight="900" font-family="sans-serif">$</text>
+</svg>
