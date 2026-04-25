@@ -518,6 +518,7 @@ function OnboardingAgent({ onComplete }) {
   const [cardConnected, setCardConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [initializing, setInitializing] = useState(false);
+  const [chatInput, setChatInput] = useState("");
   const [agentData, setAgentData] = useState(null);
   const [agentLoading, setAgentLoading] = useState(false);
 
@@ -559,7 +560,7 @@ function OnboardingAgent({ onComplete }) {
     };
     runAgent();
   }, [stage]);
-
+  
   const toggle = (arr, val) => arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
   const toggleBrand = (cat, brand) => setProfile(p => ({ ...p, brands: { ...p.brands, [cat]: toggle(p.brands[cat] || [], brand) } }));
   const selCats = profile.categories;
@@ -794,7 +795,7 @@ const AGENT_LOG = [
   { id:6,  stage:"PLAN",     icon:"🧠",  text:"Chipotle: you've spent $312 this month · deal territory 🎯",  ts:"3s ago",   done:true  },
   { id:7,  stage:"PLAN",     icon:"🧠",  text:"Delta: $2,940 in flights · ambassador level spend detected",  ts:"4s ago",   done:true  },
   { id:8,  stage:"ACT",      icon:"⚡",  text:"Writing your Chipotle pitch using your Instagram reach",      ts:"5s ago",   done:true  },
-  { id:9,  stage:"ACT",      icon:"⚡",  text:"Noticed Kai Styles also spends $280+ at Chipotle",            ts:"6s ago",   done:true  },
+  { id:9,  stage:"ACT",      icon:"⚡",  text:"Noticed Kai Cenat also spends $280+ at Chipotle",            ts:"6s ago",   done:true  },
   { id:10, stage:"ACT",      icon:"⚡",  text:"You two have 4.2M combined reach · flagged as a squad deal",  ts:"6s ago",   done:true  },
   { id:11, stage:"REFLECT",  icon:"🔄",  text:"Reviewed your pitch · adding your TikTok engagement boost",  ts:"7s ago",   done:true  },
   { id:12, stage:"REFLECT",  icon:"🔄",  text:"Chipotle pitch confidence bumped from 94% to 97% ✓",         ts:"8s ago",   done:true  },
@@ -884,7 +885,7 @@ const DEAL_ALERTS = [
   { merchant:"Sephora",        emoji:"💄", insight:"$623 beauty spend this month. Authentic brand love.",          action:"Sephora Beauty Insider creator program.", potential:"$5K–$25K", color:G.teal },
 ];
 const FRIENDS = [
-  { id:1, name:"Kai Styles", handle:"@kaistyles", avatar:"KS", niche:"Gaming · Streaming", challengePct:100, cashback:412, online:true,  sharedBrands:["Gymshark","Chipotle"] },
+  { id:1, name:"Kai Cenat", handle:"@kaistyles", avatar:"KS", niche:"Gaming · Streaming", challengePct:100, cashback:412, online:true,  sharedBrands:["Gymshark","Chipotle"] },
   { id:2, name:"Mia Chen",   handle:"@miachen",   avatar:"MC", niche:"Beauty · Lifestyle",  challengePct:66,  cashback:289, online:true,  sharedBrands:["Sephora"] },
   { id:3, name:"Trae W.",    handle:"@traewill",  avatar:"TW", niche:"Sports · Fitness",    challengePct:75,  cashback:198, online:false, sharedBrands:["Gymshark","Nike"] },
 ];
@@ -907,7 +908,7 @@ async function callNemotron(prompt, apiKey) {
   } catch { return null; }
 }
 
-function HomeScreen({ onOpenAgent, onGoToDeals }) {
+function HomeScreen({ onOpenAgent, onGoToDeals, agentData, agentLoading }) {
   const total = TRANSACTIONS.reduce((s, t) => s + t.amount, 0);
   const cb    = TRANSACTIONS.reduce((s, t) => s + t.amount * t.cashback / 100, 0);
   return (
@@ -962,7 +963,7 @@ function HomeScreen({ onOpenAgent, onGoToDeals }) {
         <Card glow>
           <SectionLabel>🤝 Squad Co-Deal Alert</SectionLabel>
           <div style={{ fontSize: 13, color: G.textPrimary, fontFamily: "'Outfit',sans-serif", lineHeight: 1.65, marginBottom: 10 }}>
-            You + <span style={{ color: G.yellow, fontWeight: 700 }}>Kai Styles</span> both spend $290+ at Chipotle. A duo pitch could be worth <span style={{ color: G.green, fontWeight: 700 }}>$25K–$60K</span>.
+            You + <span style={{ color: G.yellow, fontWeight: 700 }}>Kai Cenat</span> both spend $290+ at Chipotle. A duo pitch could be worth <span style={{ color: G.green, fontWeight: 700 }}>$25K–$60K</span>.
           </div>
           <GradBar pct={72} />
           <div style={{ fontSize: 10, color: G.textMuted, fontFamily: "'Outfit',sans-serif", marginTop: 6 }}>Combined reach: 4.2M · Go to Community →</div>
@@ -1172,7 +1173,7 @@ function ChallengesScreen() {
         <SectionLabel>April · Active Challenges</SectionLabel>
         <div style={{ borderRadius: 18, padding: "14px", background: G.gradSoft, border: `1px solid ${G.borderGlow}` }}>
           <div style={{ fontSize: 11, color: G.green, fontWeight: 700, letterSpacing: 1, fontFamily: "'Outfit',sans-serif", marginBottom: 6 }}>🤝 SQUAD CHALLENGE ACTIVE</div>
-          <div style={{ fontSize: 13, color: G.textPrimary, fontFamily: "'Outfit',sans-serif", lineHeight: 1.6 }}>You + Kai Styles are both in <strong>Fit Check</strong>. Finish together for a squad bonus.</div>
+          <div style={{ fontSize: 13, color: G.textPrimary, fontFamily: "'Outfit',sans-serif", lineHeight: 1.6 }}>You + Kai Cenat are both in <strong>Fit Check</strong>. Finish together for a squad bonus.</div>
         </div>
         {CHALLENGES.map(c => {
           const pct = (c.progress / c.target) * 100; const done = pct >= 100;
@@ -1277,12 +1278,53 @@ export default function BrandlyApp() {
   const [savedBriefs, setSavedBriefs] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
+  const [agentData, setAgentData] = useState(null);
+  const [agentLoading, setAgentLoading] = useState(false);
+
+  useEffect(() => {
+    if (stage !== AUTH.APP) return;
+    const runAgent = async () => {
+      setAgentLoading(true);
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/agent/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            transactions: [
+              { merchant: "Chipotle", amount: 156.20 },
+              { merchant: "Chipotle", amount: 156.20 },
+              { merchant: "Delta Airlines", amount: 1470.00 },
+              { merchant: "Delta Airlines", amount: 1470.00 },
+              { merchant: "Gymshark", amount: 487.00 },
+              { merchant: "Sephora", amount: 623.00 },
+              { merchant: "Shell", amount: 52.00 },
+            ],
+            creator_profile: {
+              name: "Jordan Rivera",
+              handle: "@jordanrivera",
+              categories: ["fitness", "beauty", "travel"],
+              socials: {
+                instagram: { connected: true, followers: "2.4M", followers_count: 2400000, engagement: "4.2%" },
+                tiktok: { connected: true, followers: "1.8M", followers_count: 1800000, engagement: "6.7%" },
+              }
+            }
+          })
+        });
+        const data = await res.json();
+        setAgentData(data);
+      } catch (e) {
+        console.error("Agent error:", e);
+      }
+      setAgentLoading(false);
+    };
+    runAgent();
+  }, [stage]);
 
 const askB = async (question) => {
     setChatInput("");
     setChatMessages(prev => [...prev, { q: question, a: "", loading: true }]);
     
-    const context = `You are brandly, an AI deal agent for creators. The creator has: 2.4M Instagram followers (4.2% engagement), 1.8M TikTok followers (6.7% engagement), $4,661 total spend this month, $78K+ deal pipeline, active deals: Chipotle ($312 spend, $5K-$20K potential), Delta Airlines ($2,940 spend, $10K-$50K potential), Gymshark ($487 spend, $8K-$30K potential), Sephora ($623 spend, $5K-$25K potential). Squad friend Kai Styles has overlapping Gymshark and Chipotle spend.
+    const context = `You are brandly, an AI deal agent for creators. The creator has: 2.4M Instagram followers (4.2% engagement), 1.8M TikTok followers (6.7% engagement), $4,661 total spend this month, $78K+ deal pipeline, active deals: Chipotle ($312 spend, $5K-$20K potential), Delta Airlines ($2,940 spend, $10K-$50K potential), Gymshark ($487 spend, $8K-$30K potential), Sephora ($623 spend, $5K-$25K potential). Squad friend Kai Cenat has overlapping Gymshark and Chipotle spend.
 
 Answer this question in 2-3 sentences max. Be direct, warm, and specific to their actual data. No fluff.
 
