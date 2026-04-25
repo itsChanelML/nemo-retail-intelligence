@@ -743,19 +743,19 @@ function OnboardingAgent({ onComplete }) {
 
 // ── Agent log data ─────────────────────────────────────────────
 const AGENT_LOG = [
-  { id:1,  stage:"PERCEIVE", icon:"👁",  text:"Synced 47 transactions from American Express Gold",           ts:"Just now", done:true  },
-  { id:2,  stage:"PERCEIVE", icon:"👁",  text:"Pulled Instagram: 2.4M followers · 4.2% engagement",         ts:"Just now", done:true  },
-  { id:3,  stage:"PERCEIVE", icon:"👁",  text:"Pulled TikTok: 1.8M followers · 6.7% engagement",            ts:"Just now", done:true  },
-  { id:4,  stage:"PLAN",     icon:"🧠",  text:"Identifying transactions above $250 brand deal threshold",    ts:"2s ago",   done:true  },
-  { id:5,  stage:"PLAN",     icon:"🧠",  text:"Cross-referencing spend with fitness + beauty niche profile", ts:"2s ago",   done:true  },
-  { id:6,  stage:"PLAN",     icon:"🧠",  text:"Chipotle: $312 · threshold exceeded · confidence 94%",        ts:"3s ago",   done:true  },
-  { id:7,  stage:"PLAN",     icon:"🧠",  text:"Delta: $2,940 · ambassador tier detected · confidence 89%",   ts:"4s ago",   done:true  },
-  { id:8,  stage:"ACT",      icon:"⚡",  text:"Drafted Chipotle pitch brief using Instagram + spend data",   ts:"5s ago",   done:true  },
-  { id:9,  stage:"ACT",      icon:"⚡",  text:"Detected Kai Styles also spends $280+ at Chipotle",           ts:"6s ago",   done:true  },
-  { id:10, stage:"ACT",      icon:"⚡",  text:"Generated squad co-deal · combined reach 4.2M",               ts:"6s ago",   done:true  },
-  { id:11, stage:"REFLECT",  icon:"🔄",  text:"Evaluated brief quality · adjusting for 6.7% TikTok eng.",   ts:"7s ago",   done:true  },
-  { id:12, stage:"REFLECT",  icon:"🔄",  text:"Confidence score updated: Chipotle 94% → 97%",               ts:"8s ago",   done:true  },
-  { id:13, stage:"PERCEIVE", icon:"👁",  text:"Monitoring for new transactions…",                            ts:"Now",      done:false },
+  { id:1,  stage:"PERCEIVE", icon:"👁",  text:"Connected to your American Express · syncing purchases",     ts:"Just now", done:true  },
+  { id:2,  stage:"PERCEIVE", icon:"👁",  text:"Found your Instagram · 2.4M followers, 4.2% engagement",     ts:"Just now", done:true  },
+  { id:3,  stage:"PERCEIVE", icon:"👁",  text:"Found your TikTok · 1.8M followers, 6.7% engagement",        ts:"Just now", done:true  },
+  { id:4,  stage:"PLAN",     icon:"🧠",  text:"Looking for purchases above your $250 deal threshold",        ts:"2s ago",   done:true  },
+  { id:5,  stage:"PLAN",     icon:"🧠",  text:"Matching your spending to your fitness + beauty profile",     ts:"2s ago",   done:true  },
+  { id:6,  stage:"PLAN",     icon:"🧠",  text:"Chipotle: you've spent $312 this month · deal territory 🎯",  ts:"3s ago",   done:true  },
+  { id:7,  stage:"PLAN",     icon:"🧠",  text:"Delta: $2,940 in flights · ambassador level spend detected",  ts:"4s ago",   done:true  },
+  { id:8,  stage:"ACT",      icon:"⚡",  text:"Writing your Chipotle pitch using your Instagram reach",      ts:"5s ago",   done:true  },
+  { id:9,  stage:"ACT",      icon:"⚡",  text:"Noticed Kai Styles also spends $280+ at Chipotle",            ts:"6s ago",   done:true  },
+  { id:10, stage:"ACT",      icon:"⚡",  text:"You two have 4.2M combined reach · flagged as a squad deal",  ts:"6s ago",   done:true  },
+  { id:11, stage:"REFLECT",  icon:"🔄",  text:"Reviewed your pitch · adding your TikTok engagement boost",  ts:"7s ago",   done:true  },
+  { id:12, stage:"REFLECT",  icon:"🔄",  text:"Chipotle pitch confidence bumped from 94% to 97% ✓",         ts:"8s ago",   done:true  },
+  { id:13, stage:"PERCEIVE", icon:"👁",  text:"Watching your spending for new opportunities…",               ts:"Now",      done:false },
 ];
 const SC = { PERCEIVE: G.blue, PLAN: G.yellow, ACT: G.green, REFLECT: G.teal };
 
@@ -778,15 +778,19 @@ function AgentLogOverlay({ onClose }) {
       <div style={{ padding: "20px 20px 12px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${G.border}`, flexShrink: 0 }}>
         <div>
           <div style={{ fontSize: 16, fontWeight: 800, color: G.textPrimary, fontFamily: "'Outfit',sans-serif" }}>Agent Activity</div>
-          <div style={{ fontSize: 10, color: G.textMuted, fontFamily: "'Outfit',sans-serif", letterSpacing: 1, marginTop: 2 }}>PERCEIVE · PLAN · ACT · REFLECT</div>
-        </div>
+          <div style={{ fontSize: 10, color: G.textMuted, fontFamily: "'Outfit',sans-serif", letterSpacing: 1, marginTop: 2 }}>How Brandly finds your deals</div>        </div>
         <button onClick={onClose} style={{ background: G.surface, border: `1px solid ${G.border}`, borderRadius: 100, padding: "6px 14px", color: G.textSec, fontSize: 12, fontFamily: "'Outfit',sans-serif", cursor: "pointer" }}>Close</button>
       </div>
       <div style={{ display: "flex", gap: 8, padding: "10px 20px", borderBottom: `1px solid ${G.border}`, flexShrink: 0 }}>
-        {Object.entries(SC).map(([s, c]) => (
-          <div key={s} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: c }} />
-            <span style={{ fontSize: 9, color: c, fontWeight: 700, fontFamily: "'Outfit',sans-serif", letterSpacing: 0.8 }}>{s}</span>
+        {[
+          { key:"PERCEIVE", label:"Watching",  color:SC.PERCEIVE },
+          { key:"PLAN",     label:"Thinking",  color:SC.PLAN     },
+          { key:"ACT",      label:"Working",   color:SC.ACT      },
+          { key:"REFLECT",  label:"Improving", color:SC.REFLECT  },
+        ].map(s => (
+          <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: s.color }} />
+            <span style={{ fontSize: 9, color: s.color, fontWeight: 700, fontFamily: "'Outfit',sans-serif", letterSpacing: 0.8 }}>{s.label}</span>
           </div>
         ))}
       </div>
@@ -864,10 +868,10 @@ function HomeScreen({ onOpenAgent, onGoToDeals }) {
         <div onClick={onOpenAgent} style={{ borderRadius: 18, padding: "14px", background: G.gradSoft, border: `1px solid ${G.borderGlow}`, cursor: "pointer" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: G.green, boxShadow: `0 0 8px ${G.green}`, animation: "pulse 2s infinite" }} />
-            <span style={{ fontSize: 10, color: G.green, fontWeight: 700, letterSpacing: 1, fontFamily: "'Outfit',sans-serif" }}>AGENT RUNNING · 13 ACTIONS COMPLETED</span>
+            <span style={{ fontSize: 10, color: G.green, fontWeight: 700, letterSpacing: 1, fontFamily: "'Outfit',sans-serif" }}>Your deal agent is active · 4 opportunities found</span>
           </div>
           <p style={{ margin: 0, fontSize: 12, color: G.textSec, fontFamily: "'Outfit',sans-serif", lineHeight: 1.6 }}>Latest: <span style={{ color: G.textPrimary }}>Confidence score updated — Chipotle 94% → 97%</span></p>
-          <div style={{ fontSize: 10, color: G.yellow, fontFamily: "'Outfit',sans-serif", marginTop: 6, fontWeight: 600 }}>Tap to see full reasoning log →</div>
+          <div style={{ fontSize: 10, color: G.yellow, fontFamily: "'Outfit',sans-serif", marginTop: 6, fontWeight: 600 }}>See how brandly found these deals →</div>
         </div>
 
         <div>
@@ -948,7 +952,7 @@ function SpendScreen() {
   );
 }
 
-function DealsScreen({ apiKey }) {
+function DealsScreen({ apiKey, onSaveBrief  }) {
   const [open, setOpen] = useState(null);
   const [briefs, setBriefs] = useState({});
   const [loading, setLoading] = useState({});
@@ -977,9 +981,11 @@ function DealsScreen({ apiKey }) {
             </div>
             {open === i && (
               <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${G.border}` }}>
-                {!briefs[i] ? <PrimaryBtn onClick={() => gen(i)} disabled={loading[i]}>{loading[i] ? "Nemotron thinking…" : "⚡ Generate Pitch Brief"}</PrimaryBtn>
+                {!briefs[i] ? <PrimaryBtn onClick={() => gen(i)} disabled={loading[i]}>{loading[i] ? "brandly is thinking…" : "✍️ Write my pitch"}</PrimaryBtn>
                   : <><SectionLabel>Nemotron Pitch Brief</SectionLabel><p style={{ margin: "0 0 12px", fontSize: 12, color: G.textPrimary, lineHeight: 1.75, fontFamily: "'Outfit',sans-serif", whiteSpace: "pre-line" }}>{briefs[i]}</p>
-                    <button style={{ width: "100%", padding: "11px", borderRadius: 12, background: "transparent", border: `1px solid ${G.borderGlow}`, color: G.green, fontSize: 12, fontWeight: 700, fontFamily: "'Outfit',sans-serif", cursor: "pointer" }}>📤 Send to Manager</button></>}
+                    <button onClick={() => onSaveBrief({ merchant: d.merchant, brief: briefs[i], confidence: d.potential, date: new Date().toLocaleDateString() })} style={{ width:"100%", padding:"11px", borderRadius:12, background:"transparent", border:`1px solid ${G.borderGlow}`, color:G.green, fontSize:12, fontWeight:700, fontFamily:"'Outfit',sans-serif", cursor:"pointer" }}>💾 Save to my profile</button>
+                    <button style={{ width:"100%", padding:"11px", borderRadius:12, background:"transparent", border:`1px solid ${G.border}`, color:G.textMuted, fontSize:12, fontWeight:700, fontFamily:"'Outfit',sans-serif", cursor:"pointer", marginTop:8 }}>📤 Send to my manager</button>
+                    </>}
               </div>
             )}
           </Card>
@@ -990,11 +996,36 @@ function DealsScreen({ apiKey }) {
 }
 
 function CommunityScreen() {
+  const [challenged, setChallenged] = useState([]);
+  const [activeChat, setActiveChat] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState({});
+
   return (
     <Scroll>
       <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}>
+
+        {/* Suggested friends */}
+        <div style={{ padding:"12px 0" }}>
+          <div style={{ fontSize:11, color:G.textMuted, fontFamily:"'Outfit',sans-serif", letterSpacing:1, fontWeight:700, marginBottom:10 }}>PEOPLE YOU MIGHT KNOW</div>
+          <div style={{ display:"flex", gap:12, overflowX:"auto" }}>
+            {[
+              { name:"Zara B.",   avatar:"ZB", niche:"Fashion" },
+              { name:"Leo Tran",  avatar:"LT", niche:"Gaming"  },
+              { name:"Nia Scott", avatar:"NS", niche:"Beauty"  },
+              { name:"Dre Miles", avatar:"DM", niche:"Fitness" },
+            ].map(s => (
+              <div key={s.name} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, flexShrink:0 }}>
+                <Avatar initials={s.avatar} size={44} />
+                <div style={{ fontSize:10, color:G.textPrimary, fontFamily:"'Outfit',sans-serif", fontWeight:600 }}>{s.name}</div>
+                <button style={{ fontSize:9, color:G.green, fontFamily:"'Outfit',sans-serif", fontWeight:700, background:`${G.green}15`, border:`1px solid ${G.green}30`, borderRadius:100, padding:"3px 10px", cursor:"pointer" }}>Add</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {FRIENDS.map(f => (
-          <div key={f.id} style={{ background: G.surface, border: `1px solid ${G.border}`, borderRadius: 18, padding: "14px" }}>
+          <div key={f.id} onClick={() => setActiveChat(f)} style={{ background: G.surface, border: `1px solid ${G.border}`, borderRadius: 18, padding: "14px", cursor:"pointer" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
               <div style={{ position: "relative" }}>
                 <Avatar initials={f.avatar} size={42} />
@@ -1015,10 +1046,53 @@ function CommunityScreen() {
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ fontSize: 11, color: G.textSec, fontFamily: "'Outfit',sans-serif" }}>💰 <span style={{ color: G.green, fontWeight: 700 }}>${f.cashback}</span> cashback</div>
-              <button style={{ fontSize: 10, color: G.green, fontFamily: "'Outfit',sans-serif", fontWeight: 700, background: `${G.green}15`, border: `1px solid ${G.green}30`, borderRadius: 100, padding: "4px 12px", cursor: "pointer" }}>Challenge →</button>
+              <button
+                onClick={e => { e.stopPropagation(); setChallenged(c => c.includes(f.id) ? c : [...c, f.id]); }}
+                style={{ fontSize:10, fontFamily:"'Outfit',sans-serif", fontWeight:700, borderRadius:100, padding:"5px 14px", cursor:"pointer", border:"none",
+                  background: challenged.includes(f.id) ? `${G.green}25` : `${G.green}15`,
+                  color: G.green,
+                }}>
+                {challenged.includes(f.id) ? "✓ Challenged!" : "Challenge →"}
+              </button>
             </div>
           </div>
         ))}
+
+        {/* Chat overlay */}
+        {activeChat && (
+          <div style={{ position:"fixed", inset:0, zIndex:50, background:G.bg, display:"flex", flexDirection:"column" }}>
+            <div style={{ padding:"16px 20px", borderBottom:`1px solid ${G.border}`, display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
+              <button onClick={() => setActiveChat(null)} style={{ background:"none", border:"none", color:G.textMuted, cursor:"pointer", fontSize:20 }}>←</button>
+              <Avatar initials={activeChat.avatar} size={36} />
+              <div>
+                <div style={{ fontSize:14, fontWeight:700, color:G.textPrimary, fontFamily:"'Outfit',sans-serif" }}>{activeChat.name}</div>
+                <div style={{ fontSize:10, color:G.green, fontFamily:"'Outfit',sans-serif" }}>● Online</div>
+              </div>
+            </div>
+            <div style={{ flex:1, overflowY:"auto", padding:"16px 20px", display:"flex", flexDirection:"column", gap:10 }}>
+              <div style={{ background:G.surface, borderRadius:"4px 16px 16px 16px", padding:"10px 14px", maxWidth:"80%", alignSelf:"flex-start" }}>
+                <p style={{ margin:0, fontSize:12, color:G.textPrimary, fontFamily:"'Outfit',sans-serif", lineHeight:1.6 }}>
+                  Hey! Brandly noticed we both spend at {activeChat.sharedBrands?.[0] || "the same brands"} 👀 should we pitch together?
+                </p>
+              </div>
+              {(messages[activeChat.id]||[]).map((m,i) => (
+                <div key={i} style={{ background:G.gradSoft, borderRadius:"16px 4px 16px 16px", padding:"10px 14px", maxWidth:"80%", alignSelf:"flex-end" }}>
+                  <p style={{ margin:0, fontSize:12, color:G.textPrimary, fontFamily:"'Outfit',sans-serif", lineHeight:1.6 }}>{m}</p>
+                </div>
+              ))}
+            </div>
+            <div style={{ padding:"12px 16px", borderTop:`1px solid ${G.border}`, display:"flex", gap:10, flexShrink:0 }}>
+              <input value={message} onChange={e => setMessage(e.target.value)}
+                onKeyDown={e => { if(e.key==="Enter" && message.trim()){ setMessages(m=>({...m,[activeChat.id]:[...(m[activeChat.id]||[]),message.trim()]})); setMessage(""); }}}
+                placeholder="Send a message…"
+                style={{ flex:1, background:G.surface, border:`1px solid ${G.border}`, borderRadius:100, padding:"10px 16px", color:G.textPrimary, fontSize:12, fontFamily:"'Outfit',sans-serif", outline:"none" }} />
+              <button
+                onClick={() => { if(message.trim()){ setMessages(m=>({...m,[activeChat.id]:[...(m[activeChat.id]||[]),message.trim()]})); setMessage(""); }}}
+                style={{ background:G.grad, border:"none", borderRadius:100, padding:"10px 18px", color:"#060810", fontSize:12, fontWeight:700, fontFamily:"'Outfit',sans-serif", cursor:"pointer" }}>→</button>
+            </div>
+          </div>
+        )}
+
       </div>
     </Scroll>
   );
@@ -1060,7 +1134,7 @@ function ChallengesScreen() {
   );
 }
 
-function ProfileScreen() {
+function ProfileScreen({ savedBriefs = [] }) {
   return (
     <Scroll>
       <div style={{ padding: "8px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1095,10 +1169,27 @@ function ProfileScreen() {
             </div>
           </div>
         ))}
+        {/* Saved Pitches */}
+        {savedBriefs.length > 0 && (
+          <div>
+            <div style={{ fontSize:14, fontWeight:700, color:G.textPrimary, fontFamily:"'Outfit',sans-serif", marginBottom:12 }}>My Saved Pitches</div>
+            {savedBriefs.map((b, i) => (
+              <div key={i} style={{ background:G.surface, border:`1px solid ${G.borderGlow}`, borderRadius:16, padding:"14px", marginBottom:10 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+                  <span style={{ fontSize:13, fontWeight:700, color:G.textPrimary, fontFamily:"'Outfit',sans-serif" }}>{b.merchant}</span>
+                  <Chip label={b.confidence} color={G.green} />
+                </div>
+                <p style={{ margin:0, fontSize:12, color:G.textSec, lineHeight:1.65, fontFamily:"'Outfit',sans-serif" }}>{b.brief}</p>
+                <div style={{ fontSize:10, color:G.textMuted, fontFamily:"'Outfit',sans-serif", marginTop:8 }}>Saved {b.date}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </Scroll>
   );
 }
+
 
 // ── Root ───────────────────────────────────────────────────────
 const APP_TABS = [
@@ -1109,6 +1200,7 @@ const APP_TABS = [
 
 // Auth flow stages
 const AUTH = { SPLASH:0, EMAIL:1, OTP:2, SOCIAL:3, MEET:4, ONBOARD:5, APP:6 };
+const [savedBriefs, setSavedBriefs] = useState([]);
 
 export default function BrandlyApp() {
   const [stage, setStage] = useState(AUTH.SPLASH);
@@ -1121,10 +1213,9 @@ export default function BrandlyApp() {
   const screens = [
     <HomeScreen onOpenAgent={() => setShowLog(true)} onGoToDeals={() => setTab(2)} />,
     <SpendScreen />,
-    <DealsScreen apiKey={apiKey} />,
-    <CommunityScreen />,
+    <DealsScreen apiKey={apiKey} onSaveBrief={(brief) => setSavedBriefs(b => [...b, brief])} />,    <CommunityScreen />,
     <ChallengesScreen />,
-    <ProfileScreen />,
+    <ProfileScreen savedBriefs={savedBriefs} />,
   ];
 
   return (
@@ -1164,8 +1255,8 @@ export default function BrandlyApp() {
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <PriceTagLogo size={28} />
                 <div>
-                  <div style={{ fontSize: 20, fontWeight: 900, fontFamily: "'Outfit',sans-serif", letterSpacing: -0.8 }}><GradText>brandly</GradText></div>
-                  <div style={{ fontSize: 8, color: G.textMuted, fontFamily: "'Outfit',sans-serif", letterSpacing: 1 }}>CREATOR COMMERCE INTELLIGENCE</div>
+                  <div style={{ fontSize: 22, fontWeight: 900, fontFamily: "'Outfit',sans-serif", letterSpacing: -1 }}><GradText>brandly</GradText></div>
+                  <div style={{ fontSize: 9, color: G.textMuted, fontFamily: "'Outfit',sans-serif", letterSpacing: 1 }}>CREATOR COMMERCE INTELLIGENCE</div>
                 </div>
               </div>
               <button onClick={() => setShowKey(!showKey)} style={{ background: apiKey ? `${G.green}18` : G.surface, border: `1px solid ${apiKey ? G.green + "40" : G.border}`, borderRadius: 20, padding: "6px 12px", fontSize: 9, color: apiKey ? G.green : G.textMuted, fontFamily: "'Outfit',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: 0.6 }}>
