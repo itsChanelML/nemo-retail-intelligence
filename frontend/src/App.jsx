@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+const API_URL = "http://127.0.0.1:8000";
+
 // ── Brand tokens — Yellow → Green → Blue ──────────────────────
 const G = {
   grad:        "linear-gradient(135deg, #F9E547 0%, #22C55E 45%, #3B82F6 100%)",
@@ -491,12 +493,17 @@ function AgentBubble({ msg }) {
   );
 }
 
-function ProgressDots({ total, current }) {
+function ProgressDots({ total, current, onBack }) {
   return (
-    <div style={{ display: "flex", gap: 6, justifyContent: "center", marginBottom: 18 }}>
-      {Array.from({ length: total }, (_, i) => (
-        <div key={i} style={{ height: 4, borderRadius: 100, background: i < current ? G.green : G.surfaceHigh, width: i < current ? 20 : 8, transition: "all 0.3s" }} />
-      ))}
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
+      {onBack && (
+        <button onClick={onBack} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer", fontSize: 20, padding: "0 8px 0 0" }}>←</button>
+      )}
+      <div style={{ display: "flex", gap: 6, flex: 1, justifyContent: "center" }}>
+        {Array.from({ length: total }, (_, i) => (
+          <div key={i} style={{ height: 4, borderRadius: 100, background: i < current ? G.green : G.surfaceHigh, width: i < current ? 20 : 8, transition: "all 0.3s" }} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -541,8 +548,8 @@ function OnboardingAgent({ onComplete }) {
 
   // Step 0: name/handle
   if (step === 0) return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "24px 20px", background: G.bg }}>
-      <ProgressDots total={5} current={1} />
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "48px 20px 24px", background: G.bg }}>
+      <ProgressDots total={5} current={1} onBack={null} />
       <AgentBubble msg="First things first — what's your name and creator handle? Your squad will find you by handle." />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
         <input placeholder="Your name" value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))}
@@ -556,8 +563,8 @@ function OnboardingAgent({ onComplete }) {
 
   // Step 1: creator type
   if (step === 1) return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "24px 20px", background: G.bg }}>
-      <ProgressDots total={5} current={2} />
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "48px 20px 24px", background: G.bg }}>
+      <ProgressDots total={5} current={2} onBack={() => setStep(0)} />
       <AgentBubble msg="What kind of creator are you? This shapes which brands I'll prioritize for you." />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, paddingBottom: 16 }}>
@@ -575,8 +582,8 @@ function OnboardingAgent({ onComplete }) {
 
   // Step 2: categories
   if (step === 2) return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "24px 20px", background: G.bg }}>
-      <ProgressDots total={5} current={3} />
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "48px 20px 24px", background: G.bg }}>
+      <ProgressDots total={5} current={3} onBack={() => setStep(1)} />
       <AgentBubble msg="Pick your content categories. The more you choose, the more deal signals I can find for you." />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, paddingBottom: 16 }}>
@@ -605,8 +612,8 @@ function OnboardingAgent({ onComplete }) {
     const selBrands = profile.brands[curCat] || [];
 
     return (
-      <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "24px 20px", background: G.bg }}>
-        <ProgressDots total={5} current={3} />
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "48px 20px 24px", background: G.bg }}>
+        <ProgressDots total={5} current={3} onBack={() => { if (catIdx > 0) setCatIdx(i => i - 1); else setStep(2); }} />
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
           <span style={{ fontSize: 22 }}>{cat?.emoji}</span>
           <div>
@@ -656,13 +663,13 @@ function OnboardingAgent({ onComplete }) {
 
   // Step 4: Connect card (Plaid)
   if (step === 4) return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "24px 20px", background: G.bg }}>
-      <ProgressDots total={5} current={4} />
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "48px 20px 24px", background: G.bg }}>
+      <ProgressDots total={5} current={4} onBack={() => setStep(3)} />
       <AgentBubble msg="Last step — connect your card and I'll start finding deals from your real spend. This is what makes Brandly click." />
 
       <div style={{ flex: 1, overflowY: "auto" }}>
         {/* Card art */}
-        <div style={{ borderRadius: 20, padding: "24px 20px", background: "linear-gradient(135deg, #0D1A0D, #0A1020)", border: `1px solid ${G.border}`, marginBottom: 16, position: "relative", overflow: "hidden" }}>
+        <div style={{ borderRadius: 20, padding: "48px 20px 24px", background: "linear-gradient(135deg, #0D1A0D, #0A1020)", border: `1px solid ${G.border}`, marginBottom: 16, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -40, right: -40, width: 150, height: 150, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.15) 0%, transparent 70%)" }} />
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", letterSpacing: 2, fontFamily: "'Outfit',sans-serif", marginBottom: 24 }}>BRANDLY × PLAID</div>
           <div style={{ fontSize: 20, fontWeight: 800, color: "#fff", fontFamily: "'Outfit',sans-serif", letterSpacing: 2, marginBottom: 20 }}>•••• •••• •••• ——</div>
@@ -755,7 +762,7 @@ const SC = { PERCEIVE: G.blue, PLAN: G.yellow, ACT: G.green, REFLECT: G.teal };
 function AgentPill({ onExpand }) {
   const latest = AGENT_LOG.find(l => !l.done) || AGENT_LOG[AGENT_LOG.length - 1];
   return (
-    <div onClick={onExpand} style={{ position: "absolute", bottom: 92, left: 12, right: 12, zIndex: 20, background: "rgba(12,15,28,0.96)", backdropFilter: "blur(16px)", border: `1px solid ${G.borderGlow}`, borderRadius: 100, padding: "10px 16px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", animation: "slideUp 0.4s ease" }}>
+    <div onClick={onExpand} style={{ background: "rgba(12,15,28,0.96)", backdropFilter: "blur(16px)", borderTop: `1px solid ${G.borderGlow}`, padding: "10px 16px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", flexShrink: 0 }}>
       <div style={{ width: 8, height: 8, borderRadius: "50%", background: G.green, boxShadow: `0 0 8px ${G.green}`, animation: "pulse 2s infinite", flexShrink: 0 }} />
       <span style={{ flex: 1, fontSize: 11, color: G.textSec, fontFamily: "'Outfit',sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         <span style={{ color: SC[latest.stage], fontWeight: 700 }}>{latest.stage}</span> · {latest.text}
@@ -831,12 +838,12 @@ const CHALLENGES = [
   { id:3, title:"Fit Check",     emoji:"🏋️", desc:"2 activewear purchases", target:2, progress:2, reward:"10% off Gymshark" },
 ];
 
-function HomeScreen({ onOpenAgent }) {
+function HomeScreen({ onOpenAgent, onGoToDeals }) {
   const total = TRANSACTIONS.reduce((s, t) => s + t.amount, 0);
   const cb    = TRANSACTIONS.reduce((s, t) => s + t.amount * t.cashback / 100, 0);
   return (
     <Scroll>
-      <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ padding: "8px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}>
         <div style={{ borderRadius: 24, padding: "22px 18px", background: G.surface, border: `1px solid ${G.border}`, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -50, right: -50, width: 200, height: 200, background: "radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
           <SectionLabel>April 2025 · Your Money</SectionLabel>
@@ -866,6 +873,7 @@ function HomeScreen({ onOpenAgent }) {
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: G.textPrimary, fontFamily: "'Outfit',sans-serif" }}>Deal Signals</span>
+            <div onClick={onGoToDeals} style={{ cursor: "pointer" }}>
             <GradText style={{ fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>4 live →</GradText>
           </div>
           <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 6 }}>
@@ -983,8 +991,7 @@ function DealsScreen({ apiKey }) {
 function CommunityScreen() {
   return (
     <Scroll>
-      <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 14 }}>
-        <SectionLabel>Creator Feed</SectionLabel>
+      <div style={{ padding: "8px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}><SectionLabel>Creator Feed</SectionLabel>
         {FRIENDS.map(f => (
           <div key={f.id} style={{ background: G.surface, border: `1px solid ${G.border}`, borderRadius: 18, padding: "14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -1055,7 +1062,7 @@ function ChallengesScreen() {
 function ProfileScreen() {
   return (
     <Scroll>
-      <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ padding: "8px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}>
         <Card style={{ textAlign: "center", padding: "24px 16px" }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><Avatar initials="JR" size={72} /></div>
           <div style={{ fontSize: 20, fontWeight: 800, color: G.textPrimary, fontFamily: "'Outfit',sans-serif", letterSpacing: -0.5 }}>Jordan Rivera</div>
@@ -1111,7 +1118,7 @@ export default function BrandlyApp() {
   const [showLog, setShowLog] = useState(false);
 
   const screens = [
-    <HomeScreen onOpenAgent={() => setShowLog(true)} />,
+    <HomeScreen onOpenAgent={() => setShowLog(true)} onGoToDeals={() => setTab(2)} />,
     <SpendScreen />,
     <DealsScreen apiKey={apiKey} />,
     <CommunityScreen />,
@@ -1172,9 +1179,9 @@ export default function BrandlyApp() {
             )}
             <div style={{ flex: 1, overflow: "hidden", paddingTop: 4, position: "relative" }}>
               {screens[tab]}
-              {!showLog && <AgentPill onExpand={() => setShowLog(true)} />}
               {showLog && <AgentLogOverlay onClose={() => setShowLog(false)} />}
             </div>
+            {!showLog && <AgentPill onExpand={() => setShowLog(true)} />}
             <div style={{ flexShrink: 0, background: "rgba(6,8,16,0.97)", backdropFilter: "blur(24px)", borderTop: `1px solid ${G.border}`, padding: "8px 2px 20px", display: "flex" }}>
               {APP_TABS.map((t, i) => {
                 const active = tab === i;
