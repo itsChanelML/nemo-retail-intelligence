@@ -84,7 +84,7 @@ async def health():
     return {"status": "Brandly agent is live", "model": "nvidia/nemotron-super-49b-v1"}
 
 
-@router.post("/api/chat")
+@router.post("/chat")
 async def chat(request: dict):
     from openai import OpenAI
     import os
