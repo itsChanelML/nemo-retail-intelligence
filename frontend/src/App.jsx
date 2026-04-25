@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 
 const API_URL = "http://127.0.0.1:8000";
 
+const BRANDLY_NIM_KEY = NVIDIA_API_KEY;
+
 // ── Brand tokens — Yellow → Green → Blue ──────────────────────
 const G = {
   grad:        "linear-gradient(135deg, #F9E547 0%, #22C55E 45%, #3B82F6 100%)",
@@ -1221,6 +1223,37 @@ export default function BrandlyApp() {
   const [showLog, setShowLog] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [savedBriefs, setSavedBriefs] = useState([]);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+
+const askB = async (question) => {
+    setChatInput("");
+    setChatMessages(prev => [...prev, { q: question, a: "", loading: true }]);
+    
+    const context = `You are Brandly, an AI deal agent for creators. The creator has: 2.4M Instagram followers (4.2% engagement), 1.8M TikTok followers (6.7% engagement), $4,661 total spend this month, $78K+ deal pipeline, active deals: Chipotle ($312 spend, $5K-$20K potential), Delta Airlines ($2,940 spend, $10K-$50K potential), Gymshark ($487 spend, $8K-$30K potential), Sephora ($623 spend, $5K-$25K potential). Squad friend Kai Styles has overlapping Gymshark and Chipotle spend.
+
+Answer this question in 2-3 sentences max. Be direct, warm, and specific to their actual data. No fluff.
+
+Question: ${question}`;
+
+    try {
+      const res = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${BRANDLY_NIM_KEY}` },
+        body: JSON.stringify({
+          model: "nvidia/llama-3.3-nemotron-super-49b-v1",
+          messages: [{ role: "user", content: context }],
+          max_tokens: 120,
+          temperature: 0.7,
+        }),
+      });
+      const data = await res.json();
+      const answer = data.choices?.[0]?.message?.content || "I'm having trouble connecting right now. Try again in a moment.";
+      setChatMessages(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, a: answer, loading: false } : m));
+    } catch {
+      setChatMessages(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, a: "I'm having trouble connecting right now. Try again in a moment.", loading: false } : m));
+    }
+  };
 
   const screens = [
     <HomeScreen onOpenAgent={() => setShowLog(true)} onGoToDeals={() => setTab(2)} />,
@@ -1272,7 +1305,7 @@ export default function BrandlyApp() {
                 </div>
               </div>
               <button onClick={() => setShowChat(!showChat)} style={{ background: `${G.green}18`, border: `1px solid ${G.green}40`, borderRadius: 20, padding: "6px 14px", fontSize: 10, color: G.green, fontFamily: "'Outfit',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: 0.3 }}>
-                ⚡ Ask Bray
+                ⚡ Ask Brandly
               </button>
             </div>
             <div style={{ flex: 1, overflow: "hidden", paddingTop: 4, position: "relative" }}>
@@ -1281,23 +1314,53 @@ export default function BrandlyApp() {
               {showChat && (
                 <div style={{ position:"absolute", inset:0, zIndex:40, background:G.bg, display:"flex", flexDirection:"column" }}>
                   <div style={{ padding:"16px 20px", borderBottom:`1px solid ${G.border}`, display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
-                    <button onClick={() => setShowChat(false)} style={{ background:"none", border:"none", color:G.textMuted, cursor:"pointer", fontSize:20 }}>←</button>
+                    <button onClick={() => { setShowChat(false); setChatMessages([]); }} style={{ background:"none", border:"none", color:G.textMuted, cursor:"pointer", fontSize:20 }}>←</button>
                     <div style={{ width:32, height:32, borderRadius:"50%", background:G.grad, display:"flex", alignItems:"center", justifyContent:"center", fontSize:14 }}>✦</div>
                     <div>
                       <div style={{ fontSize:14, fontWeight:700, color:G.textPrimary, fontFamily:"'Outfit',sans-serif" }}>Ask Brandly</div>
                       <div style={{ fontSize:10, color:G.green, fontFamily:"'Outfit',sans-serif" }}>● Your AI deal agent</div>
                     </div>
                   </div>
-                  <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"32px 24px" }}>
-                    <div style={{ fontSize:32, marginBottom:16 }}>✦</div>
-                    <p style={{ fontSize:15, color:G.textSec, fontFamily:"'Outfit',sans-serif", textAlign:"center", lineHeight:1.7 }}>
-                      How can I help you today?
-                    </p>
-                    <div style={{ display:"flex", flexDirection:"column", gap:10, width:"100%", marginTop:24 }}>
-                      {["Find me a new brand deal", "How's my pitch looking?", "Who should I collab with?", "What's my best category?"].map(q => (
-                        <button key={q} style={{ padding:"12px 16px", borderRadius:12, background:G.surface, border:`1px solid ${G.border}`, color:G.textPrimary, fontSize:13, fontFamily:"'Outfit',sans-serif", cursor:"pointer", textAlign:"left" }}>{q}</button>
-                      ))}
-                    </div>
+
+                  <div style={{ flex:1, overflowY:"auto", padding:"16px 20px", display:"flex", flexDirection:"column", gap:12 }}>
+                    {chatMessages.length === 0 && (
+                      <>
+                        <div style={{ textAlign:"center", marginBottom:8 }}>
+                          <div style={{ fontSize:32, marginBottom:12 }}>✦</div>
+                          <p style={{ fontSize:14, color:G.textSec, fontFamily:"'Outfit',sans-serif", lineHeight:1.7 }}>How can I help you today?</p>
+                        </div>
+                        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                          {["Find me a brand deal this week", "Help me write a pitch", "Who should I collab with?", "How's my money working for me?"].map(q => (
+                            <button key={q} onClick={() => askB(q)} style={{ padding:"12px 16px", borderRadius:12, background:G.surface, border:`1px solid ${G.border}`, color:G.textPrimary, fontSize:13, fontFamily:"'Outfit',sans-serif", cursor:"pointer", textAlign:"left" }}>{q}</button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    {chatMessages.map((m, i) => (
+                      <div key={i} style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                        <div style={{ background:G.gradSoft, borderRadius:"16px 4px 16px 16px", padding:"10px 14px", maxWidth:"80%", alignSelf:"flex-end" }}>
+                          <p style={{ margin:0, fontSize:12, color:G.textPrimary, fontFamily:"'Outfit',sans-serif", lineHeight:1.6 }}>{m.q}</p>
+                        </div>
+                        <div style={{ background:G.surface, borderRadius:"4px 16px 16px 16px", padding:"10px 14px", maxWidth:"88%", alignSelf:"flex-start", border:`1px solid ${G.borderGlow}` }}>
+                          {m.loading
+                            ? <div style={{ display:"flex", gap:4 }}>{[0,1,2].map(d => <div key={d} style={{ width:6, height:6, borderRadius:"50%", background:G.green, animation:`pulse ${1+d*0.3}s infinite` }} />)}</div>
+                            : <>
+                                <div style={{ fontSize:9, color:G.green, fontWeight:700, letterSpacing:1, fontFamily:"'Outfit',sans-serif", marginBottom:4 }}>BRANDLY</div>
+                                <p style={{ margin:0, fontSize:12, color:G.textPrimary, fontFamily:"'Outfit',sans-serif", lineHeight:1.65 }}>{m.a}</p>
+                              </>
+                          }
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ padding:"12px 16px", borderTop:`1px solid ${G.border}`, display:"flex", gap:10, flexShrink:0 }}>
+                    <input value={chatInput} onChange={e => setChatInput(e.target.value)}
+                      onKeyDown={e => { if(e.key==="Enter" && chatInput.trim()) askB(chatInput.trim()); }}
+                      placeholder="Ask anything about your deals…"
+                      style={{ flex:1, background:G.surface, border:`1px solid ${G.border}`, borderRadius:100, padding:"10px 16px", color:G.textPrimary, fontSize:12, fontFamily:"'Outfit',sans-serif", outline:"none" }} />
+                    <button onClick={() => { if(chatInput.trim()) askB(chatInput.trim()); }}
+                      style={{ background:G.grad, border:"none", borderRadius:100, padding:"10px 18px", color:"#060810", fontSize:12, fontWeight:700, fontFamily:"'Outfit',sans-serif", cursor:"pointer" }}>→</button>
                   </div>
                 </div>
               )}
