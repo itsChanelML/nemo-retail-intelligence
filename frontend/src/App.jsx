@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 const API_URL = "http://127.0.0.1:8000";
 
-const BRANDLY_NIM_KEY = NVIDIA_API_KEY;
+const BRANDLY_NIM_KEY = "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";
 
 // ── Brand tokens — Yellow → Green → Blue ──────────────────────
 const G = {
@@ -397,7 +397,7 @@ function MeetBrandlyScreen({ onNext }) {
   const [step, setStep] = useState(0);
 
   const msgs = [
-    { emoji: "✦", title: "Meet Brandly.", body: "I'm your AI financial agent. I watch how you spend, then turn it into brand deals — automatically." },
+    { emoji: "✦", title: "Meet brandly.", body: "I'm your AI financial agent. I watch how you spend, then turn it into brand deals — automatically." },
     { emoji: "🧠", title: "I think for you.", body: "Every transaction is analyzed. Every brand you already love becomes a pitch opportunity. I do the work. You get paid." },
     { emoji: "🤝", title: "Squad deals too.", body: "When your creator friends spend at the same brands, I surface co-deal opportunities with combined reach." },
     { emoji: "⚡", title: "Let's get started.", body: "Tell me about yourself and I'll find your first brand deal opportunities within minutes of setup." },
@@ -667,7 +667,7 @@ function OnboardingAgent({ onComplete }) {
   if (step === 4) return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: "48px 20px 24px", background: G.bg }}>
       <ProgressDots total={5} current={4} onBack={() => setStep(3)} />
-      <AgentBubble msg="Last step — connect your card and I'll start finding deals from your real spend. This is what makes Brandly click." />
+      <AgentBubble msg="Last step — connect your card and I'll start finding deals from your real spend. This is what makes brandly click." />
 
       <div style={{ flex: 1, overflowY: "auto" }}>
         {/* Card art */}
@@ -780,7 +780,7 @@ function AgentLogOverlay({ onClose }) {
       <div style={{ padding: "20px 20px 12px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${G.border}`, flexShrink: 0 }}>
         <div>
           <div style={{ fontSize: 16, fontWeight: 800, color: G.textPrimary, fontFamily: "'Outfit',sans-serif" }}>Agent Activity</div>
-          <div style={{ fontSize: 10, color: G.textMuted, fontFamily: "'Outfit',sans-serif", letterSpacing: 1, marginTop: 2 }}>How Brandly finds your deals</div>        </div>
+          <div style={{ fontSize: 10, color: G.textMuted, fontFamily: "'Outfit',sans-serif", letterSpacing: 1, marginTop: 2 }}>How brandly finds your deals</div>        </div>
         <button onClick={onClose} style={{ background: G.surface, border: `1px solid ${G.border}`, borderRadius: 100, padding: "6px 14px", color: G.textSec, fontSize: 12, fontFamily: "'Outfit',sans-serif", cursor: "pointer" }}>Close</button>
       </div>
       <div style={{ display: "flex", gap: 8, padding: "10px 20px", borderBottom: `1px solid ${G.border}`, flexShrink: 0 }}>
@@ -865,7 +865,7 @@ function HomeScreen({ onOpenAgent, onGoToDeals }) {
       <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: 14 }}>
         <div style={{ borderRadius: 24, padding: "22px 18px", background: G.surface, border: `1px solid ${G.border}`, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -50, right: -50, width: 200, height: 200, background: "radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
-          <SectionLabel>April 2025 · Your Money</SectionLabel>
+          <SectionLabel>April 2026 · Your Money</SectionLabel>
           <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: -2, fontFamily: "'Outfit',sans-serif", lineHeight: 1, marginBottom: 6 }}>
             <GradText>${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}</GradText>
           </div>
@@ -973,7 +973,7 @@ function DealsScreen({ apiKey, onSaveBrief  }) {
   const [loading, setLoading] = useState({});
   const gen = async (i) => {
     const d = DEAL_ALERTS[i]; setLoading(l => ({ ...l, [i]: true }));
-    const r = await callNemotron(`You are Brandly. Creator has 2.4M Instagram followers. They spent heavily at ${d.merchant}. Write 3 punchy lines (line breaks): 1) why brand needs this creator 2) what makes pitch unique 3) first outreach step. Direct.`, apiKey);
+    const r = await callNemotron(`You are brandly. Creator has 2.4M Instagram followers. They spent heavily at ${d.merchant}. Write 3 punchy lines (line breaks): 1) why brand needs this creator 2) what makes pitch unique 3) first outreach step. Direct.`, apiKey);
     setBriefs(b => ({ ...b, [i]: r || `${d.merchant} needs authentic creators with real spend history — your data proves genuine brand love.\n\nYour 2.4M reach at 4.2% engagement puts you in the top 5% for this category.\n\nHave your manager reach out to ${d.merchant.toLowerCase().replace(/\s/g, "")}@partnerships.com with your media kit this week.` }));
     setLoading(l => ({ ...l, [i]: false }));
   };
@@ -1087,7 +1087,7 @@ function CommunityScreen() {
             <div style={{ flex:1, overflowY:"auto", padding:"16px 20px", display:"flex", flexDirection:"column", gap:10 }}>
               <div style={{ background:G.surface, borderRadius:"4px 16px 16px 16px", padding:"10px 14px", maxWidth:"80%", alignSelf:"flex-start" }}>
                 <p style={{ margin:0, fontSize:12, color:G.textPrimary, fontFamily:"'Outfit',sans-serif", lineHeight:1.6 }}>
-                  Hey! Brandly noticed we both spend at {activeChat.sharedBrands?.[0] || "the same brands"} 👀 should we pitch together?
+                  Hey! brandly noticed we both spend at {activeChat.sharedBrands?.[0] || "the same brands"} 👀 should we pitch together?
                 </p>
               </div>
               {(messages[activeChat.id]||[]).map((m,i) => (
@@ -1230,7 +1230,7 @@ const askB = async (question) => {
     setChatInput("");
     setChatMessages(prev => [...prev, { q: question, a: "", loading: true }]);
     
-    const context = `You are Brandly, an AI deal agent for creators. The creator has: 2.4M Instagram followers (4.2% engagement), 1.8M TikTok followers (6.7% engagement), $4,661 total spend this month, $78K+ deal pipeline, active deals: Chipotle ($312 spend, $5K-$20K potential), Delta Airlines ($2,940 spend, $10K-$50K potential), Gymshark ($487 spend, $8K-$30K potential), Sephora ($623 spend, $5K-$25K potential). Squad friend Kai Styles has overlapping Gymshark and Chipotle spend.
+    const context = `You are brandly, an AI deal agent for creators. The creator has: 2.4M Instagram followers (4.2% engagement), 1.8M TikTok followers (6.7% engagement), $4,661 total spend this month, $78K+ deal pipeline, active deals: Chipotle ($312 spend, $5K-$20K potential), Delta Airlines ($2,940 spend, $10K-$50K potential), Gymshark ($487 spend, $8K-$30K potential), Sephora ($623 spend, $5K-$25K potential). Squad friend Kai Styles has overlapping Gymshark and Chipotle spend.
 
 Answer this question in 2-3 sentences max. Be direct, warm, and specific to their actual data. No fluff.
 
@@ -1258,7 +1258,8 @@ Question: ${question}`;
   const screens = [
     <HomeScreen onOpenAgent={() => setShowLog(true)} onGoToDeals={() => setTab(2)} />,
     <SpendScreen />,
-    <DealsScreen apiKey={apiKey} onSaveBrief={(brief) => setSavedBriefs(b => [...b, brief])} />,    <CommunityScreen />,
+    <DealsScreen apiKey={BRANDLY_NIM_KEY} onSaveBrief={(brief) => setSavedBriefs(b => [...b, brief])} />,
+    <CommunityScreen />,
     <ChallengesScreen />,
     <ProfileScreen savedBriefs={savedBriefs} />,
   ];
@@ -1305,7 +1306,7 @@ Question: ${question}`;
                 </div>
               </div>
               <button onClick={() => setShowChat(!showChat)} style={{ background: `${G.green}18`, border: `1px solid ${G.green}40`, borderRadius: 20, padding: "6px 14px", fontSize: 10, color: G.green, fontFamily: "'Outfit',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: 0.3 }}>
-                ⚡ Ask Brandly
+                ⚡ Ask brandly
               </button>
             </div>
             <div style={{ flex: 1, overflow: "hidden", paddingTop: 4, position: "relative" }}>
@@ -1317,7 +1318,7 @@ Question: ${question}`;
                     <button onClick={() => { setShowChat(false); setChatMessages([]); }} style={{ background:"none", border:"none", color:G.textMuted, cursor:"pointer", fontSize:20 }}>←</button>
                     <div style={{ width:32, height:32, borderRadius:"50%", background:G.grad, display:"flex", alignItems:"center", justifyContent:"center", fontSize:14 }}>✦</div>
                     <div>
-                      <div style={{ fontSize:14, fontWeight:700, color:G.textPrimary, fontFamily:"'Outfit',sans-serif" }}>Ask Brandly</div>
+                      <div style={{ fontSize:14, fontWeight:700, color:G.textPrimary, fontFamily:"'Outfit',sans-serif" }}>Ask brandly</div>
                       <div style={{ fontSize:10, color:G.green, fontFamily:"'Outfit',sans-serif" }}>● Your AI deal agent</div>
                     </div>
                   </div>
@@ -1382,7 +1383,7 @@ Question: ${question}`;
       </div>
 
       <div style={{ position: "fixed", bottom: 12, right: 14, fontSize: 9, color: "rgba(255,255,255,0.12)", fontFamily: "'Outfit',sans-serif" }}>
-        Brandly · NVIDIA Inception · Nemotron-49B
+        brandly · NVIDIA Inception · Nemotron-49B
       </div>
     </div>
   );
